@@ -1,10 +1,11 @@
 import { Component } from 'react';
+import { SearchBar } from './SearchBar/SearchBar';
 export class App extends Component {
   state = {
   };
   render() {
     return (
-      <div>12345</div>
+      <SearchBar></SearchBar>
     );
   }
 }
