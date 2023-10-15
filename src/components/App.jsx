@@ -38,14 +38,14 @@ export class App extends Component {
       .then(data => {
         if (data.totalHits < 1) {
           throw new Error(
-            'Sorry, there are no images matching your search query. Please try again.'
+            'Вибачайте, але нажаль ми не знайшли нічого за цим запитом. Спробуйте ще.'
           );
         }
         this.setState({
           img: data.hits,
           totalPage: Math.ceil(data.totalHits / 12),
         });
-        Notify.success(`Hooray! We found ${data.totalHits} images.`);
+        Notify.success(`Круто! Ми знайшли ${data.totalHits} картинок.`);
       })
       .catch(({ message }) => this.setState({ error: message }))
       .finally(() => this.setState({ isLoading: false }));
