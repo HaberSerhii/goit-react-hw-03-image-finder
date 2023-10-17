@@ -15,6 +15,7 @@ Notify.init({
   position: 'left-top',
   timeout: 2000,
 });
+
 export class App extends Component {
   state = {
     img: [],
@@ -36,29 +37,31 @@ export class App extends Component {
           totalPage: 0,
         },
         () => {
-          getImage(this.state.searchValue, this.state.page).then(data => {
-            if (data.totalHits < 1) {
-              throw new Error(
-            'Вибачайте, але нажаль ми не знайшли нічого за цим запитом. Спробуйте ще.'
-          );
+          getImage(this.state.searchValue, this.state.page)
+            .then((data) => {
+              if (data.totalHits < 1) {
+                throw new Error(
+                  'Вибачайте, але нажаль ми не знайшли нічого за цим запитом. Спробуйте ще.'
+                );
+              }
+              this.setState({
+                img: data.hits,
+                totalPage: Math.ceil(data.totalHits / 12),
+              });
+              Notify.success(`Круто! Ми знайшли ${data.totalHits} картинок.`);
+            })
+            .catch(({ message }) => this.setState({ error: message }))
+            .finally(() => this.setState({ isLoading: false }));
         }
-          this.setState({
-          img: data.hits,
-          totalPage: Math.ceil(data.totalHits / 12),
-        });
-        Notify.success(`Круто! Ми знайшли ${data.totalHits} картинок.`);
-      })
-      .catch(({ message }) => this.setState({ error: message }))
-      .finally(() => this.setState({ isLoading: false }));}
       );
     }
-  };
+  }
 
-  smoothScroll = cardHeight => {
+  smoothScroll = (cardHeight) => {
     scroll.scrollMore(cardHeight * 2);
   };
 
-  onSubmit = value => {
+  onSubmit = (value) => {
     this.setState({ searchValue: value });
   };
 
@@ -69,24 +72,22 @@ export class App extends Component {
     return cardHeight;
   };
 
-
   onChangePage = () => {
     this.setState(
-      prevState => ({
+      (prevState) => ({
         page: prevState.page + 1,
         isLoading: true,
       }),
       () => {
-      getImage(this.state.searchValue, this.state.page).then(data => {
-        this.setState(
-          prevState => ({
-            img: [...prevState.img, ...data.hits],
-          }),
-          this.smoothScroll(this.getNextPageHeight())
-        );
-      })
-      .catch(error => this.setState({ error: error.message }))
-      .finally(() => this.setState({ isLoading: false }));
+        getImage(this.state.searchValue, this.state.page)
+          .then((data) => {
+            this.setState((prevState) => ({
+              img: [...prevState.img, ...data.hits],
+            }));
+            this.smoothScroll(this.getNextPageHeight());
+          })
+          .catch((error) => this.setState({ error: error.message }))
+          .finally(() => this.setState({ isLoading: false }));
       }
     );
   };
